@@ -2,14 +2,19 @@
 # BCA Header
 
 This is a helper python script for editing Bootloader Configuration Area (BCA) for MCU Bootloader (NXP Kinetis Bootloader 2) previously named [Kinetis Bootloader](https://www.nxp.com/design/software/development-software/mcuxpresso-software-and-tools/mcuboot-mcu-bootloader-for-nxp-microcontrollers:MCUBOOT)
- 
+
+## Usage of calculate_crc.py
+```bash
+python calculate_crc.py <binary_image> <result_image>
+```
+
 ## Required Packages
 ```
 crccheck
 ```
 
 # TODO
-- [ ] Fix CRC check including CRC area
+- [ ] Fix CRC check calculation according to manual
 - [ ] Fix default values
 - [ ] GUI
 
