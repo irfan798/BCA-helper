@@ -3,6 +3,7 @@
 # This is a helper object for editing Bootloader Configuration Area (BCA) for 
 # MCU Bootloader for NXP microcontrollers previously named Kinetis Bootloader
 
+import sys
 import struct
 # BCA CONFIG AREA
 # typedef struct BootloaderConfigurationData
@@ -69,10 +70,26 @@ class BCAObject:
         ''''''
         self.BCA_OFFSET=bca_offset
         self.header_size = struct.calcsize(self.header_info)
+        self.original_image = None
+
+    def fromFile(self, path, autoset_tag=False):
+        # Read Binary Image
+        with open(path, 'rb') as bfile:
+            image = bfile.read()
+            self.fromBytes(image, autoset_tag)
+
+    def saveToFile(self, path):
+        # Write header back to original image
+        image_result = self.toBytesFile(self.original_image)
+
+        # Write resulted image to filesystem
+        with open(path, 'wb') as rfile:
+            rfile.write(image_result)
+       
     
-    def fromBytes(self, image):
+    def fromBytes(self, image, autoset_tag=False):
         """ Gets whole image as an input then crops and reads BCA according to BCA_offset"""
-        image = bytearray(image)
+        self.original_image = image = bytearray(image)
         image_header = image[self.BCA_OFFSET:self.BCA_OFFSET+self.header_size]
         result = struct.unpack(self.header_info, image_header)
 
@@ -102,7 +119,11 @@ class BCAObject:
         ) = result
 
         if not self.isValid():
-            print('Not a valid tag')
+            print('Warning: Tag is not set!')
+            if autoset_tag:
+                print('Auto setting tag and header for you at the offset', hex(self.BCA_OFFSET))
+                self.tag = self.BCA_KEY
+
     
     def toBytes(self):
         """ Returns little endian bytes respresentation of BCA """
@@ -131,9 +152,12 @@ class BCAObject:
             self.qspi_config_block_pointer,    
         ) 
     
-    def toBytesFile(self, image):
+    def toBytesFile(self, image=None):
         ''' Writes Header area back to image'''
-        image = bytearray(image)
+        if image is None:
+            image = self.original_image
+        else:
+            image = bytearray(image)
         header_area = self.toBytes()
         image[self.BCA_OFFSET:self.BCA_OFFSET+self.header_size] = header_area
         return image

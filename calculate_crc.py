@@ -33,12 +33,8 @@ def crcUpdate(image, flash_start_offset, crc_start_offset, programSize=None):
 		programSize = len(image)
 
 	bca = BCAObject()
-	bca.fromBytes(image)
+	bca.fromBytes(image, autoset_tag=True)
 
-	if not bca.isValid():
-		print('Warning: Tag is not set!')
-		print('Auto setting tag and header for you at the offset', hex(bca.BCA_OFFSET))
-		bca.tag = bca.BCA_KEY
 
 	## Configure CRC areas
 	bca.crcStartAddress = flash_start_offset + crc_start_offset
