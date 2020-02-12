@@ -6,6 +6,7 @@ This is a helper python script for editing Bootloader Configuration Area (BCA) f
 ## Usage of calculate_crc.py
 ```bash
 python calculate_crc.py <binary_image> <result_image>
+python change_timeout.py <binary_image> <result_image> <timeout_ms>
 ```
 
 ## Required Packages
